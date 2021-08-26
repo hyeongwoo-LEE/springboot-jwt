@@ -1,13 +1,18 @@
 package com.cos.jwt.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 public class User {
 
@@ -18,6 +23,8 @@ public class User {
 
     private String password;
 
+
     @ElementCollection(fetch = FetchType.LAZY)
-    private Set<UserRole> roleSet =new HashSet<>();
+    @Builder.Default
+    private Set<UserRole> roleSet = new HashSet<>();
 }
