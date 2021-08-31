@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -26,5 +27,5 @@ public class User {
 
     @ElementCollection(fetch = FetchType.LAZY)
     @Builder.Default
-    private Set<UserRole> roleSet = new HashSet<>();
+    private Set<UserRole> roleSet = new HashSet<UserRole>(Arrays.asList(UserRole.USER));
 }

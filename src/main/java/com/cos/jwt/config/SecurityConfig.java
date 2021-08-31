@@ -1,9 +1,9 @@
 package com.cos.jwt.config;
 
 
-import com.cos.jwt.filter.MyFilter1;
-import com.cos.jwt.filter.MyFilter3;
 import com.cos.jwt.jwt.JwtAuthenticationFilter;
+import com.cos.jwt.jwt.JwtAuthorizationFilter;
+import com.cos.jwt.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,6 +23,7 @@ import org.springframework.web.filter.CorsFilter;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final CorsFilter corsFilter;
+    private final UserRepository userRepository;
 
     @Bean
     public PasswordEncoder passwordEncoder(){
@@ -35,17 +36,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf().disable();
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) //세션을 사용하지 않겠다.
         .and()
-                .addFilterBefore(new MyFilter3(), SecurityContextPersistenceFilter.class) //시큐리티 보다 먼저 필터거치기
+
                 .addFilter(corsFilter) //@CrossOrigin(인증X), 시큐리티 필터에 등록인증(O)
                 .formLogin().disable()
                 .httpBasic().disable()
                 .addFilter(new JwtAuthenticationFilter(authenticationManager()))
+                .addFilter(new JwtAuthorizationFilter(authenticationManager(), userRepository))
                 .authorizeRequests()
-                .antMatchers("api/v1/user/**")
+                .antMatchers("/api/v1/user/**")
                 .access("hasRole('ROLE_USER') or hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')")
-                .antMatchers("api/v1/manager/**")
+                .antMatchers("/api/v1/manager/**")
                 .access("hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')")
-                .antMatchers("api/v1/admin/**")
+                .antMatchers("/api/v1/admin/**")
                 .access( "hasRole('ROLE_ADMIN')")
                 .anyRequest().permitAll();
 
